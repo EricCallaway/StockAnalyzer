@@ -1,4 +1,5 @@
-create table stock (    id INTEGER PRIMARY KEY,
+create table stock_catalog (    
+    id INTEGER PRIMARY KEY,
     current_price FLOAT,
     market_capitalization FLOAT,
     price_to_earnings FLOAT,
@@ -8,4 +9,4 @@ create table stock (    id INTEGER PRIMARY KEY,
     name VARCHAR
 );
 
-create INDEX idx_stock_ticker on stock(ticker);
+create INDEX idx_stock_ticker on stock_catalog(ticker);
