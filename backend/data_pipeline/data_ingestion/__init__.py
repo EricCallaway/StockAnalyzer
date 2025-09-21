@@ -21,6 +21,7 @@ class APIInterface(ABC):
         """This method is used to make HTTP requests with the specified method"""
         pass
 
+
     def get(self, endpoint: str, **kwargs) -> Dict[str, Any]:
         return self.request(HTTPMethod.GET, endpoint, **kwargs)
 
