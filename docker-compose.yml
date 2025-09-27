@@ -1,0 +1,152 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for Airflow metadata and application data
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_db_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    restart: always
+
+  # Redis for Airflow Celery backend
+  redis:
+    image: redis:7.2.0
+    expose:
+      - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always
+
+  # Backend FastAPI service
+  backend:
+    build: ./services/backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://airflow:airflow@postgres:5432/airflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./services/backend:/app
+    restart: always
+
+  # Airflow webserver
+  airflow-webserver:
+    build: ./services/data_pipeline
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  # Airflow scheduler
+  airflow-scheduler:
+    build: ./services/data_pipeline
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  # Airflow worker
+  airflow-worker:
+    build: ./services/data_pipeline
+    command: celery worker
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - 'celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    environment:
+      - DUMB_INIT_SETSID=0
+    restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  # Airflow init
+  airflow-init:
+    build: ./services/data_pipeline
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db init
+        airflow users create \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com \
+          --password admin
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
+      - AIRFLOW__CORE__FERNET_KEY=''
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
+      - AIRFLOW__CORE__LOAD_EXAMPLES=false
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
+      - AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK=true
+    user: "50000:0"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Frontend server
+  frontend-server:
+    build: ./services/frontend/server
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./services/frontend/server:/app
+    restart: always
+
+  # Frontend client
+  frontend-client:
+    build: ./services/frontend/client
+    ports:
+      - "3001:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./services/frontend/client:/app
+    restart: always
+
+volumes:
+  postgres_db_volume:
