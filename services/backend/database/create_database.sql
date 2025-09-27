@@ -1,1 +1,0 @@
-create DATABASE stock_analysis;
