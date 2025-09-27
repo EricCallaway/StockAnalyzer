@@ -16,7 +16,7 @@ This directory is where all the data transformation/processing will happen.
 This direcotry is responsible for handling all of the orchestration of the data. Processes will rely on logic within this directory retrieve data for the rest of the system to use.
 This will act as an internal API to the rest of the system.
 
-
+```
 project-root/
 ├── data/                 # Data warehouse and processing
 │   ├── warehouse/        # Data warehouse tables and schemas
@@ -79,7 +79,7 @@ project-root/
 │
 ├── docker-compose.yml    # To spin up backend + frontend together
 └── README.md
-
+```
 
 $ python -m pip install "fastapi[standard]"
 
