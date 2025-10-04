@@ -97,3 +97,19 @@ cd frontend/client/
 npm start
 
 cd backend && poetry run uvicorn app.main:app --reload
+
+# Docker:
+
+## Postgres:
+```
+docker compose up byte_sanctuary_db
+```
+To connect to the container itself
+```
+docker exec -it byte_sanctuary_db /bin/bash
+```
+
+To connect to the database within the container
+```
+source src/env.sh && docker exec -it byte_sanctuary_db psql -U $DB_USER $DB_NAME
+```

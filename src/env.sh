@@ -1,0 +1,5 @@
+export DB_USER='admin_stock_analyzer'
+export DB_PASSWORD='PtvH~ibAmTyyh1j-xV!0]GusVVi~Mh>8hp#,@1o9m?seWm^orQw~M~dzJ>#4D*bK%]Bt}upqi_k-@GP^'
+export DB_NAME='byte_sanctuary'
+export DB_SCHEMA='data_nexus'
+export DB_PORT='5433'
