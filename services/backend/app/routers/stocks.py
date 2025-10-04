@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from app.models.stock import Stock
-from data_pipeline.data_ingestion.integrations.alpha_advantage.api_alpha_advantage import AlphaAdvantageInterface
 
 import logging
 
@@ -32,9 +31,9 @@ async def read_stock(ticker_symbol: str):
 
 @router.get('/alpha/{ticker_symbol}')
 async def read_aplpha_stock(ticker_symbol: str):
-    alpha_advantage = AlphaAdvantageInterface()
-    data = alpha_advantage.core_stock_time_series_daily()
-    return data
+    # Make a request to DB
+    pass
+
 
 @router.post('/')
 async def create_stock(stock: Stock):
