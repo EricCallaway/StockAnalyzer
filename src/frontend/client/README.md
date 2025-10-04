@@ -73,17 +73,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 ### Docker Documentation
 To build docker image
 ```
-docker build -t react-dev:latest .
+docker build -t client-dev:latest .
 ```
 
 To run the docker container
 ```
-docker run --name react -p 127.0.0.1:3000:3000 react-dev:latest
+docker run --name client -p 127.0.0.1:3000:3000 client-dev:latest
 ```
 
 To connect to the container via interactive terminal
 ```
-docker exec -it react sh
+docker exec -it client sh
 ```
 NOTE:
 Above it's sh and not bash because alpine does not have bash

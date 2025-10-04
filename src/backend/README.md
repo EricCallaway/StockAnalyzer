@@ -17,7 +17,7 @@ uv pip install -r requirements.txt
 
 To build the docker image
 ```
-docker build -t dev:latest .
+docker build -t backend-dev:latest .
 ```
 
 To run the docker container

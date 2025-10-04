@@ -1,8 +1,8 @@
 # Frontend server Dockerfile
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set working directory
-WORKDIR /app
+WORKDIR /server
 
 # Copy package files
 COPY package*.json ./
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose port
-EXPOSE 3000
+EXPOSE 4000
 
 # Start the server
 CMD ["node", "index.js"]
