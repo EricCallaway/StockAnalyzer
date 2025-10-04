@@ -24,3 +24,8 @@ To run the docker container
 ```
 docker run --name fastapi -p 127.0.0.1:8000:8000 dev:latest
 ```
+
+To connect to the container via interactive terminal
+```
+docker exec -it fastapi bash
+```
