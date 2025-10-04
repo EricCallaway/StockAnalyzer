@@ -68,3 +68,22 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+### Docker Documentation
+To build docker image
+```
+docker build -t react-dev:latest .
+```
+
+To run the docker container
+```
+docker run --name react -p 127.0.0.1:3000:3000 react-dev:latest
+```
+
+To connect to the container via interactive terminal
+```
+docker exec -it react sh
+```
+NOTE:
+Above it's sh and not bash because alpine does not have bash
