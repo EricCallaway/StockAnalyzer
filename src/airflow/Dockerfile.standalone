@@ -1,4 +1,4 @@
-# Airflow service Dockerfile
+# Standalone Airflow service Dockerfile (SQLite + SequentialExecutor)
 FROM apache/airflow:slim-latest-python3.13
 
 # Switch to root user for system package installation
@@ -24,23 +24,21 @@ COPY --chown=airflow:root . /opt/airflow/
 # Set working directory
 WORKDIR /opt/airflow
 
-# Set environment variables for PostgreSQL
-ENV AIRFLOW__CORE__EXECUTOR=CeleryExecutor
-ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://airflow:airflow@byte_sanctuary_db:5432/airflow
-ENV AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@byte_sanctuary_db:5432/airflow
-ENV AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
+# Set environment variables for standalone SQLite setup
+ENV AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
 ENV AIRFLOW__CORE__FERNET_KEY=''
 ENV AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=false
 ENV AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
 ENV AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK=true
 
-# Create startup script
-COPY --chown=airflow:root start.sh /opt/airflow/start.sh
-RUN chmod +x /opt/airflow/start.sh
+# Create standalone startup script
+COPY --chown=airflow:root start_standalone.sh /opt/airflow/start_standalone.sh
+RUN chmod +x /opt/airflow/start_standalone.sh
 
 # Expose port
 EXPOSE 8080
 
-# Use startup script as entrypoint
-ENTRYPOINT ["/opt/airflow/start.sh"]
+# Use standalone startup script as entrypoint
+ENTRYPOINT ["/opt/airflow/start_standalone.sh"]

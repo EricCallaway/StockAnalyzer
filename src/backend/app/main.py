@@ -10,7 +10,7 @@ app.include_router(stocks.router)
 @app.get("/")
 async def read_root():
     # render a home page
-    return {"page": "Home Page"}
+    return {"page": "Welcome to the Backend Server"}
 
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
