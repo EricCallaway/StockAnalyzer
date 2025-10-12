@@ -13,7 +13,7 @@ app.get('/api/data', (req, res) => {
 
 app.get('/', (req, res) => {
     res.json({
-        'message': "This is the root of the application."
+        'message': "This is the root of the NodeJS front-end application."
     });
 })
 
